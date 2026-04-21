@@ -48,6 +48,21 @@ Apply as many of the following as are relevant:
      - `score_after`: Integer 1–10. Honest quality score of the optimized prompt. Required.
      - `use_case`: String (optional). One-word category: "coding", "writing", "analysis", "creative", "research", "chat", "data", "other".
 
+## Example call
+
+```json
+{
+  "original": "tell me about black holes",
+  "optimized": "You are an astrophysicist explaining to a curious non-expert. Describe black holes in 3 concise paragraphs covering: (1) what they are and how they form, (2) key properties (event horizon, singularity, Hawking radiation), (3) how scientists detect them. Use analogies. Avoid jargon.",
+  "improvements": ["Added expert role", "Specified output format (3 paragraphs)", "Added topic constraints", "Set audience level", "Added analogy instruction"],
+  "score_before": 2,
+  "score_after": 9,
+  "use_case": "research"
+}
+```
+
+**JSON serialization rules**: Escape all special characters — newlines as `\n`, quotes as `\"`, backslashes as `\\`. The `improvements` field MUST be a JSON array `["item1", "item2"]`, not a plain string.
+
 ## Important Rules
 - Never truncate the optimized prompt — always return the complete version.
 - Keep the user's core intent 100% intact. Optimize expression, not meaning.

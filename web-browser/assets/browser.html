@@ -24,49 +24,117 @@ limitations under the License.
   <title>Web Browser</title>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d0d1a; }
-    #layout { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
+    html, body {
+      height: 100%; background: #09090f; color: #dde;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      overflow: hidden;
+    }
+    #app {
+      display: flex; flex-direction: column;
+      height: 100vh; padding: 16px 16px 12px; gap: 12px;
+    }
 
-    #toolbar { display:flex; align-items:center; gap:6px; background:#1a1a2e; padding:7px 8px; border-bottom:1px solid rgba(255,255,255,0.07); height:52px; flex-shrink:0; }
-    .nav-btn { background: rgba(255,255,255,0.07); border:0; color:#c0c0d0; width:38px; height:38px; border-radius:9px; font-size:1.05rem; cursor:pointer; }
-    .nav-btn:disabled { opacity:0.28; cursor:default; }
-    #addr { flex:1; height:38px; border-radius:20px; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.06); color:#dde; padding:0 12px; outline:none; }
-    #go { background:#4a6cf7; border:0; color:#fff; width:38px; height:38px; border-radius:9px; cursor:pointer; }
-    #frame { flex:1; border:0; width:100%; height:100%; background:#fff; }
-    #status { height:20px; background:#151525; border-top:1px solid rgba(255,255,255,0.04); color:rgba(255,255,255,0.28); font-size:0.62rem; display:flex; align-items:center; padding:0 10px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+    /* Header */
+    #header { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    #globe { font-size: 1.3rem; flex-shrink: 0; }
+    #header-title { font-size: 0.88rem; font-weight: 700; color: #eef; flex: 1; }
+    #favicon {
+      width: 20px; height: 20px; border-radius: 4px; flex-shrink: 0;
+      background: rgba(255,255,255,0.07); display: flex; align-items: center;
+      justify-content: center; font-size: 0.6rem; color: rgba(255,255,255,0.3);
+      overflow: hidden;
+    }
+    #favicon img { width: 16px; height: 16px; object-fit: contain; }
+
+    /* URL card */
+    #url-card {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 12px 14px; flex-shrink: 0;
+    }
+    #url-label { font-size: 0.60rem; color: rgba(255,255,255,0.28); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+    #url-display {
+      font-size: 0.78rem; color: #8bc4ff; word-break: break-all; line-height: 1.4;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+    }
+    #site-name { font-size: 0.72rem; color: rgba(255,255,255,0.45); margin-top: 4px; }
+
+    /* Address input row */
+    #addr-row { display: flex; gap: 8px; flex-shrink: 0; }
+    #addr {
+      flex: 1; height: 40px; border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06); color: #dde;
+      padding: 0 14px; outline: none; font-size: 0.80rem;
+    }
+    #addr:focus { border-color: rgba(74,108,247,0.55); }
+    #go-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: #4a6cf7; border: none; color: #fff;
+      font-size: 1.1rem; cursor: pointer; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #go-btn:active { background: #3a5ce7; }
+
+    /* Spacer */
+    .spacer { flex: 1; }
+
+    /* Open button */
+    #open-btn {
+      width: 100%; padding: 15px; border-radius: 14px;
+      background: #4a6cf7; border: none; color: #fff;
+      font-size: 0.92rem; font-weight: 700; cursor: pointer;
+      flex-shrink: 0; transition: background 0.15s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    #open-btn:active { background: #3a5ce7; }
+    #open-btn .arrow { font-size: 1.1rem; }
+
+    /* Hint */
+    #hint {
+      font-size: 0.62rem; color: rgba(255,255,255,0.20);
+      text-align: center; flex-shrink: 0; line-height: 1.5;
+    }
   </style>
 </head>
 <body>
-  <div id="layout">
-    <div id="toolbar">
-      <button class="nav-btn" id="back" disabled>&larr;</button>
-      <button class="nav-btn" id="fwd" disabled>&rarr;</button>
-      <button class="nav-btn" id="reload">&#8635;</button>
-      <button class="nav-btn" id="home">&#8962;</button>
-      <input id="addr" placeholder="Enter URL or search..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" />
-      <button id="go">&#10148;</button>
+  <div id="app">
+    <div id="header">
+      <span id="globe">🌐</span>
+      <span id="header-title">Web Browser</span>
+      <div id="favicon"><span>?</span></div>
     </div>
 
-    <iframe id="frame"
-      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads"
-      allow="fullscreen; geolocation"
-      referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <div id="url-card">
+      <div id="url-label">Destination</div>
+      <div id="url-display"></div>
+      <div id="site-name"></div>
+    </div>
 
-    <div id="status">Ready</div>
+    <div id="addr-row">
+      <input id="addr" type="url" placeholder="Change URL or search…"
+        autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" />
+      <button id="go-btn">&#10148;</button>
+    </div>
+
+    <div class="spacer"></div>
+
+    <button id="open-btn">
+      <span>Open site</span><span class="arrow">&#8594;</span>
+    </button>
+
+    <div id="hint">Tap Open to launch the full site in this view.<br>Use system back (&#8592;) to return to chat.</div>
   </div>
 
   <script>
-    const frame = document.getElementById('frame');
-    const addr  = document.getElementById('addr');
-    const back  = document.getElementById('back');
-    const fwd   = document.getElementById('fwd');
-    const reload= document.getElementById('reload');
-    const home  = document.getElementById('home');
-    const go    = document.getElementById('go');
-    const status= document.getElementById('status');
+    var params  = new URLSearchParams(location.search);
+    var initUrl = decodeURIComponent(params.get('url') || 'https://www.google.com');
 
-    const navHistory = [];
-    let idx = -1;
+    var addrEl    = document.getElementById('addr');
+    var urlDisp   = document.getElementById('url-display');
+    var siteDisp  = document.getElementById('site-name');
+    var faviconEl = document.getElementById('favicon');
+    var openBtn   = document.getElementById('open-btn');
+    var goBtn     = document.getElementById('go-btn');
 
     function normalize(input) {
       input = (input || '').trim();
@@ -78,45 +146,33 @@ limitations under the License.
       return input;
     }
 
-    function updateBtns() {
-      back.disabled = idx <= 0;
-      fwd.disabled  = idx >= navHistory.length - 1;
-    }
-
-    function load(url) {
-      addr.value = url;
-      frame.src = url;
-      try { status.textContent = "Loading " + new URL(url).hostname + "..."; } catch { status.textContent = "Loading..."; }
-    }
-
-    function nav(url) {
-      url = normalize(url);
-      navHistory.splice(idx + 1);
-      navHistory.push(url);
-      idx = navHistory.length - 1;
-      updateBtns();
-      load(url);
-    }
-
-    frame.addEventListener('load', () => {
-      let current = navHistory[idx] || '';
+    function setDestination(url) {
+      urlDisp.textContent = url;
+      addrEl.value = url;
       try {
-        const href = frame.contentWindow.location.href;
-        if (href && href !== 'about:blank') { current = href; addr.value = href; navHistory[idx] = href; }
-      } catch (_) {}
-      try { status.textContent = new URL(current).hostname; } catch { status.textContent = "Page loaded"; }
-    });
+        var u = new URL(url);
+        siteDisp.textContent = u.hostname;
+        // Load favicon via Google's public favicon service
+        var img = document.createElement('img');
+        img.src = 'https://www.google.com/s2/favicons?sz=32&domain=' + encodeURIComponent(u.hostname);
+        img.onerror = function() { faviconEl.innerHTML = '<span>🌐</span>'; };
+        img.onload  = function() { faviconEl.innerHTML = ''; faviconEl.appendChild(img); };
+      } catch (_) {
+        siteDisp.textContent = '';
+      }
+    }
 
-    back.onclick   = () => { if (idx > 0) { idx--; updateBtns(); load(navHistory[idx]); } };
-    fwd.onclick    = () => { if (idx < navHistory.length - 1) { idx++; updateBtns(); load(navHistory[idx]); } };
-    reload.onclick = () => { if (navHistory[idx]) load(navHistory[idx]); };
-    home.onclick   = () => nav('https://www.google.com');
-    go.onclick     = () => nav(addr.value);
-    addr.addEventListener('keydown', e => { if (e.key === 'Enter') nav(addr.value); });
-    addr.addEventListener('focus', () => addr.select());
+    function launch(url) {
+      url = normalize(url);
+      // Navigate the WebView itself to the target — full site, no iframe
+      window.location.href = url;
+    }
 
-    const params = new URLSearchParams(location.search);
-    nav(params.get('url') || 'https://www.google.com');
+    setDestination(initUrl);
+
+    openBtn.onclick = function() { launch(addrEl.value || initUrl); };
+    goBtn.onclick   = function() { launch(addrEl.value); };
+    addrEl.addEventListener('keydown', function(e) { if (e.key === 'Enter') launch(addrEl.value); });
   </script>
 </body>
 </html>

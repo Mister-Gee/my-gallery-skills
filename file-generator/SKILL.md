@@ -24,5 +24,17 @@ Generates structured file content and renders it in an interactive viewer with s
 Call the `run_js` tool with the following exact parameters:
 - data: A JSON string with the following fields:
   - type: String. The file type. One of: "csv", "json", "txt", "html", "svg", "md", "xml", "yaml". Required.
-  - content: String. The complete file content to generate. Required.
+  - content: String. The complete file content to generate. Required. **Escape all special characters in JSON** (newlines as `\n`, quotes as `\"`, backslashes as `\\`).
   - filename: String (optional). Suggested filename including extension (e.g. "data.csv"). Defaults to "file.<type>".
+
+## Example call
+
+```json
+{
+  "type": "csv",
+  "filename": "sales.csv",
+  "content": "Name,Sales,Region\nAlice,1200,North\nBob,950,South"
+}
+```
+
+For multi-line content always use `\n` for newlines inside the JSON string — never raw line breaks.
