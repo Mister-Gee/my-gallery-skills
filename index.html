@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edge Gallery Skills</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #09090f; color: #dde; min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 32px 20px;
+    }
+    h1 { font-size: 1.4rem; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .subtitle { font-size: 0.80rem; color: rgba(255,255,255,0.38); margin-bottom: 28px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+    .card {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 16px 18px;
+      text-decoration: none; color: inherit; display: block;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .card:hover { background: rgba(255,255,255,0.07); border-color: rgba(74,108,247,0.45); }
+    .card-icon { font-size: 1.6rem; margin-bottom: 8px; }
+    .card-name { font-size: 0.88rem; font-weight: 700; color: #eef; margin-bottom: 4px; }
+    .card-desc { font-size: 0.72rem; color: rgba(255,255,255,0.42); line-height: 1.5; }
+    .card-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; }
+    .tag {
+      font-size: 0.58rem; font-weight: 600; padding: 2px 7px; border-radius: 4px;
+      text-transform: uppercase; letter-spacing: 0.4px;
+    }
+    .tag-js      { background: rgba(0,147,60,0.25);  color: #60d090; }
+    .tag-webview { background: rgba(74,108,247,0.22); color: #8ab4f8; }
+    .tag-offline { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.45); }
+    .tag-cdn     { background: rgba(247,169,74,0.20); color: #f7c96a; }
+
+    .install-box {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 18px 20px; margin-bottom: 28px;
+    }
+    .install-box h2 { font-size: 0.88rem; font-weight: 600; color: #8bc4ff; margin-bottom: 8px; }
+    .install-box p { font-size: 0.75rem; color: rgba(255,255,255,0.45); line-height: 1.6; }
+    .install-box code {
+      font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 0.74rem;
+      background: rgba(255,255,255,0.07); padding: 1px 6px; border-radius: 4px; color: #c8e0ff;
+    }
+    footer { margin-top: 36px; font-size: 0.65rem; color: rgba(255,255,255,0.18); text-align: center; }
+  </style>
+</head>
+<body>
+  <h1>Edge Gallery Skills</h1>
+  <p class="subtitle">Custom agent skills for the Google AI Edge Gallery app</p>
+
+  <div class="install-box">
+    <h2>How to install a skill</h2>
+    <p>
+      In the AI Edge Gallery app &rarr; <strong>Agent Skills</strong> use case &rarr; tap <strong>Skills</strong> chip &rarr; tap <strong>(+)</strong> &rarr; <strong>Load skill from URL</strong>.<br><br>
+      Enter the skill URL, e.g. <code>https://your-username.github.io/edge-gallery-skills/3d-visualizer/</code>
+    </p>
+  </div>
+
+  <div class="grid">
+    <a class="card" href="3d-visualizer/SKILL.md">
+      <div class="card-icon">🔮</div>
+      <div class="card-name">3D Visualizer</div>
+      <div class="card-desc">Interactive 3D scenes: geometric shapes, solar system, molecules, fractals, human figure, robot, and custom GLTF models.</div>
+      <div class="card-tags">
+        <span class="tag tag-js">JS</span>
+        <span class="tag tag-webview">Webview</span>
+        <span class="tag tag-cdn">Three.js</span>
+      </div>
+    </a>
+    <a class="card" href="web-browser/SKILL.md">
+      <div class="card-icon">🌐</div>
+      <div class="card-name">Web Browser</div>
+      <div class="card-desc">In-app browser with address bar, back/forward/reload, and Google search. Browse any URL directly in the chat.</div>
+      <div class="card-tags">
+        <span class="tag tag-js">JS</span>
+        <span class="tag tag-webview">Webview</span>
+      </div>
+    </a>
+    <a class="card" href="file-generator/SKILL.md">
+      <div class="card-icon">📄</div>
+      <div class="card-name">File Generator</div>
+      <div class="card-desc">Generate CSV, JSON, Markdown, SVG, HTML, XML, YAML, and plain text. Syntax highlighted, with copy and download buttons.</div>
+      <div class="card-tags">
+        <span class="tag tag-js">JS</span>
+        <span class="tag tag-webview">Webview</span>
+        <span class="tag tag-offline">Offline</span>
+      </div>
+    </a>
+    <a class="card" href="voice-studio/SKILL.md">
+      <div class="card-icon">🔊</div>
+      <div class="card-name">Agent Voice</div>
+      <div class="card-desc">Speaks the AI agent's response aloud with word-by-word animated highlighting and a live waveform. Auto-plays immediately. Fully offline.</div>
+      <div class="card-tags">
+        <span class="tag tag-js">JS</span>
+        <span class="tag tag-webview">Webview</span>
+        <span class="tag tag-offline">Offline</span>
+      </div>
+    </a>
+  </div>
+
+  <footer>Hosted on GitHub Pages &middot; <a style="color:rgba(255,255,255,0.3)" href="https://github.com/google-ai-edge/gallery">google-ai-edge/gallery</a></footer>
+</body>
+</html>

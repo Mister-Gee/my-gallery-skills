@@ -1,0 +1,298 @@
+<!--
+@license
+Copyright 2026 Google LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+==============================================================================
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>File Viewer</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; background: #0d0d1a; color: #dde;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      overflow: hidden; }
+
+    #app { display: flex; flex-direction: column; height: 100vh; }
+
+    /* ── Header ── */
+    #header {
+      display: flex; align-items: center; gap: 8px;
+      background: #1a1a2e; padding: 8px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      flex-shrink: 0; height: 48px;
+    }
+    #type-badge {
+      background: #4a6cf7; color: #fff;
+      font-size: 0.6rem; font-weight: 700;
+      padding: 2px 7px; border-radius: 4px;
+      text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0;
+    }
+    #filename {
+      flex: 1; font-size: 0.82rem; font-weight: 600; color: #eef;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    #filesize { font-size: 0.68rem; color: rgba(255,255,255,0.32); flex-shrink: 0; }
+    #copy-btn {
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14);
+      color: #ccd; font-size: 0.72rem; padding: 5px 12px; border-radius: 7px;
+      cursor: pointer; flex-shrink: 0; transition: background 0.2s;
+    }
+    #copy-btn.copied { background: #1e5c3a; border-color: #2e8c5a; color: #7effc0; }
+
+    /* ── Content area ── */
+    #content { flex: 1; overflow: auto; padding: 12px; }
+
+    /* Code / text view */
+    pre {
+      font-family: 'Cascadia Code', 'Fira Code', 'Courier New', monospace;
+      font-size: 0.72rem; line-height: 1.65; color: #b0ccee;
+      white-space: pre-wrap; word-break: break-all;
+    }
+
+    /* CSV table */
+    table { border-collapse: collapse; width: 100%; font-size: 0.72rem; }
+    th {
+      background: #1a2a4a; color: #8bc4ff; font-weight: 600;
+      padding: 6px 10px; text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      position: sticky; top: 0; z-index: 1;
+    }
+    td { padding: 5px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #ccd; }
+    tr:nth-child(even) td { background: rgba(255,255,255,0.025); }
+
+    /* SVG container */
+    #svg-wrap {
+      display: flex; align-items: center; justify-content: center;
+      height: 100%; min-height: 200px;
+    }
+    #svg-wrap svg { max-width: 100%; max-height: 100%; }
+
+    /* HTML iframe */
+    #html-frame { width: 100%; height: 100%; border: 0; border-radius: 6px; background: #fff; }
+
+    /* Download button */
+    #dl-btn {
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14);
+      color: #ccd; font-size: 0.72rem; padding: 5px 10px; border-radius: 7px;
+      cursor: pointer; flex-shrink: 0; transition: background 0.2s;
+    }
+    #dl-btn:active { background: rgba(255,255,255,0.16); }
+
+    /* Markdown */
+    .md-body { color: #ccd; font-size: 0.80rem; line-height: 1.75; }
+    .md-body h1,.md-body h2,.md-body h3 { color: #8bc4ff; margin: 0.8em 0 0.3em; }
+    .md-body h1 { font-size: 1.15rem; border-bottom: 1px solid rgba(255,255,255,0.10); padding-bottom: 4px; }
+    .md-body h2 { font-size: 0.98rem; } .md-body h3 { font-size: 0.88rem; }
+    .md-body p  { margin: 0.3em 0 0.6em; }
+    .md-body code { background: rgba(255,255,255,0.08); padding: 1px 5px; border-radius: 3px;
+      font-family: 'Cascadia Code','Fira Code',monospace; font-size: 0.85em; }
+    .md-body pre  { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px; padding: 10px 12px; overflow-x: auto; margin: 0.5em 0; }
+    .md-body pre code { background: none; padding: 0; }
+    .md-body ul,.md-body ol { padding-left: 1.4em; margin: 0.3em 0; }
+    .md-body li { margin: 0.15em 0; }
+    .md-body blockquote { border-left: 3px solid #4a6cf7; padding-left: 10px;
+      color: rgba(200,210,240,0.6); margin: 0.4em 0; }
+    .md-body table { border-collapse: collapse; width: 100%; font-size: 0.78rem; }
+    .md-body th { background: #1a2a4a; color: #8bc4ff; padding: 5px 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.12); }
+    .md-body td { padding: 4px 8px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .md-body a  { color: #6ea8ff; }
+    .md-body hr { border: 0; border-top: 1px solid rgba(255,255,255,0.10); margin: 1em 0; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <div id="header">
+      <span id="type-badge">TXT</span>
+      <span id="filename">file.txt</span>
+      <span id="filesize"></span>
+      <button id="copy-btn">Copy</button>
+      <button id="dl-btn">&#8595; Save</button>
+    </div>
+    <div id="content"></div>
+  </div>
+
+  <script>
+    const params   = new URLSearchParams(location.search);
+    const type     = (params.get('type') || 'txt').toLowerCase();
+    const filename = decodeURIComponent(params.get('filename') || ('file.' + type));
+
+    let content = '';
+    try {
+      const b64 = decodeURIComponent(params.get('data') || '');
+      content = b64 ? decodeURIComponent(escape(atob(b64))) : '';
+    } catch (e) {
+      content = '(Error decoding file content: ' + e.message + ')';
+    }
+
+    // Header
+    document.getElementById('type-badge').textContent = type.toUpperCase();
+    document.getElementById('filename').textContent   = filename;
+    const bytes = new TextEncoder().encode(content).length;
+    document.getElementById('filesize').textContent   =
+      bytes >= 1024 ? (bytes / 1024).toFixed(1) + ' KB' : bytes + ' B';
+
+    // Copy button
+    const copyBtn = document.getElementById('copy-btn');
+    copyBtn.onclick = () => {
+      const done = () => {
+        copyBtn.textContent = 'Copied!';
+        copyBtn.classList.add('copied');
+        setTimeout(() => { copyBtn.textContent = 'Copy'; copyBtn.classList.remove('copied'); }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(content).then(done).catch(fallback);
+      } else {
+        fallback();
+      }
+      function fallback() {
+        const ta = document.createElement('textarea');
+        ta.value = content; ta.style.cssText = 'position:fixed;opacity:0;';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); } catch (_) {}
+        document.body.removeChild(ta); done();
+      }
+    };
+
+    // Download
+    var mimeMap = { csv:'text/csv', json:'application/json', txt:'text/plain',
+      html:'text/html', svg:'image/svg+xml', md:'text/markdown',
+      xml:'application/xml', yaml:'application/yaml' };
+    document.getElementById('dl-btn').onclick = function() {
+      try {
+        var mime = (mimeMap[type] || 'text/plain') + ';charset=utf-8';
+        var blob = new Blob([content], { type: mime });
+        var burl = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = burl; a.download = filename;
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a);
+        setTimeout(function() { URL.revokeObjectURL(burl); }, 1000);
+      } catch (_) {
+        var a2 = document.createElement('a');
+        a2.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(content);
+        a2.download = filename;
+        document.body.appendChild(a2); a2.click(); document.body.removeChild(a2);
+      }
+    };
+
+    // Render
+    const contentDiv = document.getElementById('content');
+    switch (type) {
+      case 'csv':  renderCSV(content, contentDiv);  break;
+      case 'svg':  renderSVG(content, contentDiv);  break;
+      case 'html': renderHTML(content, contentDiv); break;
+      case 'md':   renderMarkdown(content, contentDiv); break;
+      default:     renderCode(content, contentDiv); break;
+    }
+
+    function renderCode(text, el) {
+      const pre = document.createElement('pre');
+      pre.textContent = text;
+      el.appendChild(pre);
+    }
+
+    function renderCSV(text, el) {
+      try {
+        const lines = text.trim().split('\n');
+        if (lines.length < 1) { renderCode(text, el); return; }
+        const table = document.createElement('table');
+        lines.forEach((line, i) => {
+          const cells = parseCSVLine(line);
+          const row   = document.createElement('tr');
+          cells.forEach(cell => {
+            const td = document.createElement(i === 0 ? 'th' : 'td');
+            td.textContent = cell.trim().replace(/^"|"$/g, '');
+            row.appendChild(td);
+          });
+          table.appendChild(row);
+        });
+        el.appendChild(table);
+      } catch (_) { renderCode(text, el); }
+    }
+
+    function parseCSVLine(line) {
+      const result = []; let cur = '', inQ = false;
+      for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if      (c === '"')            { inQ = !inQ; }
+        else if (c === ',' && !inQ)    { result.push(cur); cur = ''; }
+        else                           { cur += c; }
+      }
+      result.push(cur);
+      return result;
+    }
+
+    function renderSVG(text, el) {
+      try {
+        const parser = new DOMParser();
+        const doc    = parser.parseFromString(text, 'image/svg+xml');
+        const svgEl  = doc.documentElement;
+        // Sanitize: strip scripts and javascript: event attrs
+        svgEl.querySelectorAll('script').forEach(s => s.remove());
+        svgEl.querySelectorAll('*').forEach(node => {
+          Array.from(node.attributes).forEach(attr => {
+            if (attr.name.startsWith('on') ||
+                (attr.value && attr.value.trim().toLowerCase().startsWith('javascript:'))) {
+              node.removeAttribute(attr.name);
+            }
+          });
+        });
+        const wrap = document.createElement('div');
+        wrap.id = 'svg-wrap';
+        wrap.appendChild(document.importNode(svgEl, true));
+        el.appendChild(wrap);
+      } catch (_) { renderCode(text, el); }
+    }
+
+    function renderHTML(text, el) {
+      el.style.padding = '0';
+      const iframe = document.createElement('iframe');
+      iframe.id      = 'html-frame';
+      iframe.sandbox = 'allow-scripts';
+      iframe.srcdoc  = text;
+      el.appendChild(iframe);
+    }
+
+    function renderMarkdown(text, el) {
+      try {
+        if (typeof marked === 'undefined') { renderCode(text, el); return; }
+        const div = document.createElement('div');
+        div.className = 'md-body';
+        const tmp = document.createElement('div');
+        tmp.innerHTML = marked.parse(text);
+        // Sanitize: strip scripts and on* event attributes
+        tmp.querySelectorAll('script').forEach(s => s.remove());
+        tmp.querySelectorAll('*').forEach(node => {
+          Array.from(node.attributes).forEach(attr => {
+            if (attr.name.startsWith('on') ||
+                (attr.value && attr.value.trim().toLowerCase().startsWith('javascript:'))) {
+              node.removeAttribute(attr.name);
+            }
+          });
+        });
+        div.innerHTML = tmp.innerHTML;
+        el.appendChild(div);
+      } catch (_) { renderCode(text, el); }
+    }
+  </script>
+</body>
+</html>

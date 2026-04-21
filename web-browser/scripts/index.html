@@ -1,0 +1,58 @@
+﻿<!--
+@license
+Copyright 2026 Google LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+==============================================================================
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Browser Skill</title>
+</head>
+<body>
+  <script>
+    window['ai_edge_gallery_get_result'] = async (data) => {
+      try {
+        const jsonData = JSON.parse(data);
+        let url   = (jsonData.url   || '').trim();
+        const query = (jsonData.query || '').trim();
+
+        if (!url && query) {
+          url = 'https://www.google.com/search?q=' + encodeURIComponent(query);
+        }
+        if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
+          url = 'https://' + url;
+        }
+        if (!url) {
+          url = 'https://www.google.com';
+        }
+
+        return JSON.stringify({
+          result: `Opening web browser: ${url}`,
+          webview: {
+            url: 'browser.html?url=' + encodeURIComponent(url),
+            aspectRatio: 0.72
+          }
+        });
+      } catch (e) {
+        console.error(e);
+        return JSON.stringify({ error: `Web Browser error: ${e.message}` });
+      }
+    };
+  </script>
+</body>
+</html>

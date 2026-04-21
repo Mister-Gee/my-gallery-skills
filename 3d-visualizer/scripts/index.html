@@ -1,0 +1,51 @@
+﻿<!--
+@license
+Copyright 2026 Google LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+==============================================================================
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Visualizer Skill</title>
+</head>
+<body>
+  <script>
+    window['ai_edge_gallery_get_result'] = async (data) => {
+      try {
+        const jsonData = JSON.parse(data);
+        const scene       = encodeURIComponent((jsonData.scene || 'geometry').toLowerCase());
+        const shape       = encodeURIComponent((jsonData.shape || 'cube').toLowerCase());
+        const title       = encodeURIComponent(jsonData.title || '3D Visualizer');
+        const description = encodeURIComponent(jsonData.description || '');
+        const modelUrl    = encodeURIComponent(jsonData.modelUrl || '');
+
+        return JSON.stringify({
+          result: 'Rendering interactive 3D scene. Drag to rotate, scroll/pinch to zoom, right-drag to pan.',
+          webview: {
+            url: `viewer.html?scene=${scene}&shape=${shape}&title=${title}&description=${description}&modelUrl=${modelUrl}`,
+            aspectRatio: 1.0
+          }
+        });
+      } catch (e) {
+        console.error(e);
+        return JSON.stringify({ error: `3D Visualizer error: ${e.message}` });
+      }
+    };
+  </script>
+</body>
+</html>
