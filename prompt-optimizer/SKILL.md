@@ -2,7 +2,7 @@
 name: prompt-optimizer
 description: Analyzes a user's rough prompt and rewrites it to be maximally effective — adding role context, output format, constraints, chain-of-thought triggers, and specificity. Displays original vs. optimized side-by-side with a scored breakdown of every improvement made.
 metadata:
-  homepage: https://mister-gee.github.io/edge-gallery-skills/prompt-optimizer/
+  homepage: https://mister-gee.github.io/my-gallery-skills/prompt-optimizer/
 ---
 
 # Prompt Optimizer

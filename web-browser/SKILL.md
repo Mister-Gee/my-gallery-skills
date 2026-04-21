@@ -2,7 +2,7 @@
 name: web-browser
 description: Open an in-app web browser to navigate, surf the internet, and browse any website by URL or search query.
 metadata:
-  homepage: https://mister-gee.github.io/edge-gallery-skills/web-browser/
+  homepage: https://mister-gee.github.io/my-gallery-skills/web-browser/
 ---
 
 # Web Browser

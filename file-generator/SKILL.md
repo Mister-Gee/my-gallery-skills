@@ -2,7 +2,7 @@
 name: file-generator
 description: Generate and preview file content as CSV tables, JSON, plain text, HTML, SVG, Markdown, XML, or YAML. The LLM produces the content and the skill renders it in a syntax-highlighted viewer with a copy-to-clipboard button.
 metadata:
-  homepage: https://mister-gee.github.io/edge-gallery-skills/file-generator/
+  homepage: https://mister-gee.github.io/my-gallery-skills/file-generator/
 ---
 
 # File Generator
