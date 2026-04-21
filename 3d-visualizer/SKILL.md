@@ -2,7 +2,7 @@
 name: 3d-visualizer
 description: Render an interactive 3D visualization of an object, scene, or concept. Supports geometric shapes, solar system, molecule structures, and fractals.
 metadata:
-  homepage: https://your-username.github.io/edge-gallery-skills/3d-visualizer/
+  homepage: https://mister-gee.github.io/edge-gallery-skills/3d-visualizer/
 ---
 
 # 3D Visualizer
