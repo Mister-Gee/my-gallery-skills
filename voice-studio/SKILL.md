@@ -2,7 +2,7 @@
 name: agent-voice
 description: Speaks the AI agent's response aloud using on-device TTS with word-by-word animated highlighting and a live waveform. Use this whenever the user wants to hear spoken replies — it auto-plays immediately. Works fully offline.
 metadata:
-  homepage: https://mister-gee.github.io/edge-gallery-skills/voice-studio/
+  homepage: https://mister-gee.github.io/my-gallery-skills/voice-studio/
 ---
 
 # Agent Voice
